@@ -19,10 +19,6 @@ class RecordSoundsViewController: UIViewController {
     // MARK: - @IBAction
     @IBAction func recordAudio(_ sender: AnyObject) {
         updateUI(isRecording: true)
-        recordingLabel.text = "Recording in progress"
-        stopRecordingButton.isEnabled = true
-        recordButton.isEnabled = false
-        
         let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask, true)[0] as String
         let recordingName = "recordedVoice.wav"
         let pathArray = [dirPath, recordingName]
@@ -30,8 +26,8 @@ class RecordSoundsViewController: UIViewController {
         
         let session = AVAudioSession.sharedInstance()
         try! session.setCategory(AVAudioSession.Category.playAndRecord, mode: AVAudioSession.Mode.default, options: AVAudioSession.CategoryOptions.defaultToSpeaker)
-        
         try! audioRecorder = AVAudioRecorder(url: filePath!, settings: [:])
+        audioRecorder.delegate = self
         audioRecorder.isMeteringEnabled = true
         audioRecorder.prepareToRecord()
         audioRecorder.record()
@@ -44,6 +40,13 @@ class RecordSoundsViewController: UIViewController {
         try! audioSession.setActive(false)
     }
     
+    //MARK: - Helper Methods
+    private func updateUI(isRecording: Bool) {
+        recordingLabel.text = isRecording ? "Recording in Progress" : "Tap to Record"
+        stopRecordingButton.isEnabled = isRecording
+        recordButton.isEnabled = !isRecording
+    }
+    
     // MARK: - UIViewController Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,17 +57,10 @@ class RecordSoundsViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "stopRecording" {
             let playSoundsVC = segue.destination as! PlaySoundsViewController
-            
             let recordedAudioURL = sender as! URL
+            
             playSoundsVC.recordedAudioURL = recordedAudioURL
         }
-    }
-    
-    //MARK: - Helper Methods
-    private func updateUI(isRecording: Bool) {
-        recordingLabel.text = isRecording ? "Recording in Progress" : "Tap to Record"
-        stopRecordingButton.isEnabled = isRecording
-        recordButton.isEnabled = !isRecording
     }
 }
 
