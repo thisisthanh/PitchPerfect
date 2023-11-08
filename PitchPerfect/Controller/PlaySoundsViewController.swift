@@ -59,7 +59,6 @@ class PlaySoundsViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         setupAudio()
-        self.navigationItem.title = "Change your voice!"
     }
     
     override func viewDidAppear(_ animated: Bool) {
